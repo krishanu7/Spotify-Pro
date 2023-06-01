@@ -13,7 +13,13 @@ import "../styles/Footer.css";
 const Footer = () => {
   return (
     <div className="footer">
-      <div className="footer_left"></div>
+      <div className="footer_left">
+        <img className="footer_albumLogo" src="" alt="" />
+        <div className="footer_songInfo">
+          <h4>No song is playing</h4>
+          <p>...</p>
+        </div>
+      </div>
       <div className="footer_center">
         <ShuffleIcon className="footer_green" />
         <SkipPreviousIcon className="footer_icon" />
