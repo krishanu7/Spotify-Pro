@@ -7,13 +7,10 @@ const Player = ({ spotify }) => {
   return (
     <div className="player">
       <div className="player_body">
-        {/* Sidebar */}
         <Sidebar />
-        {/* Body */}
         <Body spotify={spotify} />
       </div>
-      <Footer />
-      {/* Footer */}
+      <Footer spotify={spotify} />
     </div>
   );
 };

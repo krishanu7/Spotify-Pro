@@ -1,52 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Login from "./components/Login";
-import {useDataLayerValue} from "./components/DataLayer"
+import { useDataLayerValue } from "./components/DataLayer";
 import { getTokenFromResponse } from "./components/Spotify";
-import SpotifyWebApi from 'spotify-web-api-js'
+import SpotifyWebApi from "spotify-web-api-js";
 import Player from "./components/Player";
 
-const spotify = new SpotifyWebApi();
+const s = new SpotifyWebApi();
 
 const App = () => {
   const [{ token }, dispatch] = useDataLayerValue();
 
   useEffect(() => {
+    // Set token
     const hash = getTokenFromResponse();
     window.location.hash = "";
-    let token = hash.access_token;
+    let _token = hash.access_token;
 
-    if(token) {
-      spotify.setAccessToken(token);
+    if (_token) {
+      s.setAccessToken(_token);
 
-      dispatch ({
+      dispatch({
         type: "SET_TOKEN",
-        token: token,
-      })
-      spotify.getMe().then(user => {
+        token: _token,
+      });
+
+      s.getPlaylist("3WxPrIa0QCUaVRKOUzTy20").then((response) =>
+        dispatch({
+          type: "SET_DISCOVER_WEEKLY",
+          discover_weekly: response,
+        })
+      );
+
+      s.getMyTopArtists().then((response) =>
+        dispatch({
+          type: "SET_TOP_ARTISTS",
+          top_artists: response,
+        })
+      );
+
+      dispatch({
+        type: "SET_SPOTIFY",
+        spotify: s,
+      });
+
+      s.getMe().then((user) => {
         dispatch({
           type: "SET_USER",
           user,
-        })
-      })
-      spotify.getUserPlaylists().then((playlists) =>{
+        });
+      });
+
+      s.getUserPlaylists().then((playlists) => {
         dispatch({
-          type: "SET_PLAYLIST",
+          type: "SET_PLAYLISTS",
           playlists,
-        })
-      })
+        });
+      });
     }
-  }, []);
+  }, [token, dispatch]);
+
   return (
     <div className="app">
-      {
-        token ? (
-          <Player/>
-        ) : (
-          <Login />
-        )
-      }
+      {!token && <Login />}
+      {token && <Player spotify={s} />}
     </div>
   );
 };
 
 export default App;
+
